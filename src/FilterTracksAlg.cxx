@@ -1,5 +1,8 @@
 #include "FilterTracksAlg.hxx"
 
+// Gaudi
+#include <k4Interface/IGeoSvc.h>
+
 // DD4hep
 #include <DD4hep/Detector.h>
 
@@ -29,11 +32,13 @@ StatusCode FilterTracksAlg::initialize() {
 
 // Build magnetic field
 void FilterTracksAlg::buildBfield() {
+	// Get GeoSvc
+	ServiceHandle<IGeoSvc> geoSvc("GeoSvc", name());
 	// Get magnetic field
-	dd4hep::Detector& lcdd = dd4hep::Detector::getInstance();
+	dd4hep::Detector* lcdd = geoSvc->getDetector();
 	const double position[3] = {0, 0, 0};		// position to calculate magnetic field (here, the origin)
 	double magneticFieldVector[3] = {0, 0, 0};	// initialise object to hold magnetic field
-	lcdd.field().magneticField(
+	lcdd->field().magneticField(
 			position, magneticFieldVector);	// get the magnetic field vector from DD4hep
 	m_Bz = magneticFieldVector[2] / dd4hep::tesla;
 }

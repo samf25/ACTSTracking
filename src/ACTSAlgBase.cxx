@@ -5,6 +5,7 @@
 
 // Gaudi
 #include <GaudiKernel/MsgStream.h>
+#include <k4Interface/IGeoSvc.h>
 
 // DD4hep
 #include <DD4hep/DD4hepUnits.h>
@@ -625,14 +626,16 @@ void ACTSAlgBase::buildDetector() {
 }
 
 void ACTSAlgBase::buildBfield() {
+  // Get GeoSvc
+  ServiceHandle<IGeoSvc> geoSvc("GeoSvc", name());
   // Get the magnetic field
-  dd4hep::Detector& lcdd = dd4hep::Detector::getInstance();
+  dd4hep::Detector* lcdd = geoSvc->getDetector();
   const double position[3] = {
       0, 0,
       0};  // position to calculate magnetic field at (the origin in this case)
   double magneticFieldVector[3] = {
       0, 0, 0};  // initialise object to hold magnetic field
-  lcdd.field().magneticField(
+  lcdd->field().magneticField(
       position,
       magneticFieldVector);  // get the magnetic field vector from DD4hep
 
